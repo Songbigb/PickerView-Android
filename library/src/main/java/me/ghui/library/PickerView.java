@@ -90,10 +90,10 @@ public class PickerView extends View {
 
 		float dividerH = dp(1);
 		//1.draw center line
-		float lSx = cLeft + cWidth / 4f;
+		float lSx = cLeft + cWidth / 6f;
 		float textAreaH = cHeight / 5f;
 		float lSy = cTop + 2 * textAreaH;
-		float lEx = lSx + cWidth / 2f;
+		float lEx = lSx + cWidth * 4 / 6f;
 		float lEy = lSy;
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(dividerH);
