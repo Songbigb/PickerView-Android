@@ -20,9 +20,9 @@ public class DrawUtils {
 	 * @param paint
 	 * @return the text bounds
 	 */
-	public static RectF drawCenterText(String text, float cX, float cY, Canvas canvas, Paint paint) {
+	public static void drawCenterText(String text, float cX, float cY, Canvas canvas, Paint paint) {
 		if (text == null) {
-			return null;
+			return;
 		}
 		Paint.Align align = paint.getTextAlign();
 		paint.getTextBounds(text, 0, text.length(), tempRect);
@@ -42,17 +42,9 @@ public class DrawUtils {
 		float descent = Math.abs(metrics.descent);
 		y = cY + (acent - descent) / 2f;
 		canvas.drawText(text, x, y, paint);
-
-		rectF.left = cX - tempRect.width() / 2f;
-		rectF.top = cY - tempRect.height() / 2f;
-		rectF.right = rectF.left + tempRect.width();
-		rectF.bottom = rectF.top + tempRect.height();
-//		paint.setStyle(Paint.Style.STROKE);
-//		canvas.drawRect(rectF,paint);
-		return rectF;
 	}
 
-	public static RectF drawCenterText(String text, float sX, float sY, float paddingH, float paddingV, Canvas canvas, Paint paint) {
+	public static void drawCenterText(String text, float sX, float sY, float paddingH, float paddingV, Canvas canvas, Paint paint) {
 		paint.getTextBounds(text, 0, text.length(), tempRect);
 
 		float textWidth = tempRect.width();
@@ -63,10 +55,10 @@ public class DrawUtils {
 		float eY = sY + 2 * paddingV + textHeight;
 		float cY = (sY + eY) / 2f;
 
-		return drawCenterText(text, cX, cY, canvas, paint);
+		drawCenterText(text, cX, cY, canvas, paint);
 	}
 
-	public static RectF drawCenterTextRevrsed(String text, float eX, float sY, float paddingH, float paddingV, Canvas canvas, Paint paint) {
+	public static void drawCenterTextRevrsed(String text, float eX, float sY, float paddingH, float paddingV, Canvas canvas, Paint paint) {
 		paint.getTextBounds(text, 0, text.length(), tempRect);
 
 		float textWidth = tempRect.width();
@@ -74,7 +66,7 @@ public class DrawUtils {
 		float textHeight = tempRect.height();
 		float cY = sY + paddingV + textHeight / 2f;
 
-		return drawCenterText(text, cX, cY, canvas, paint);
+		drawCenterText(text, cX, cY, canvas, paint);
 	}
 
 	public static void drawCenterVerticalText(String text, float startX, float centerY, Canvas canvas, Paint paint) {

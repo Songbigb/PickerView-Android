@@ -16,10 +16,8 @@ import java.util.List;
 public class PickerView extends View {
 	//scale of height and width
 	private float mHWScale = 0.5f;
-	private String mOkText = "Ok";
-	private String mCancleText = "Cancel";
-	private int mTopDividerColor = Color.parseColor("#FACFCFCF");
-	private int mBtnColor = Color.parseColor("#FF4A4A4A");
+	private int mTopDividerColor = Color.parseColor("#AACFCFCF");
+	private int mTextColor = Color.parseColor("#FF4A4A4A");
 
 	private Context mContext;
 	private Paint mPaint;
@@ -46,16 +44,6 @@ public class PickerView extends View {
 		mContext = getContext();
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mRectF = new RectF();
-	}
-
-	public void setOkText(String okText) {
-		mOkText = okText;
-		postInvalidate();
-	}
-
-	public void setCancleText(String cancleText) {
-		mCancleText = cancleText;
-		postInvalidate();
 	}
 
 	@Override
@@ -100,49 +88,41 @@ public class PickerView extends View {
 		int cHeight = cBottom - cTop;
 		int cWidth = cRight - cLeft;
 
-		//1. draw top divider
-		mPaint.setStyle(Paint.Style.STROKE);
-		mPaint.setColor(mTopDividerColor);
 		float dividerH = dp(1);
+		//1.draw center line
+		float lSx = cLeft + cWidth / 4f;
+		float textAreaH = cHeight / 5f;
+		float lSy = cTop + 2 * textAreaH;
+		float lEx = lSx + cWidth / 2f;
+		float lEy = lSy;
+		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(dividerH);
-		canvas.drawLine(cLeft, cTop + dividerH / 2f, cRight, cTop + dividerH / 2f, mPaint);
+		mPaint.setColor(mTopDividerColor);
+		canvas.drawLine(lSx, lSy, lEx, lEy, mPaint);
+		lSy = lEy = lSy + textAreaH;
+		canvas.drawLine(lSx, lSy, lEx, lEy, mPaint);
 
-		//2. draw cancel btn
-		float textSize = dp(16);
-		mPaint.setColor(mBtnColor);
+		//2.draw center text
+		mPaint.setColor(mTextColor);
 		mPaint.setStyle(Paint.Style.FILL);
-		mPaint.setTextSize(textSize);
-		float textPadding = textSize / 2f;
-		float sX = cLeft;
-		float sY = cTop;
-		RectF rectF = DrawUtils.drawCenterText(mCancleText, sX, sY, textPadding, textPadding, canvas, mPaint);
-
-		//3. draw ok btn
-		float eX = cRight;
-		sY = cTop;
-		DrawUtils.drawCenterTextRevrsed(mOkText, eX, sY, textPadding, textPadding, canvas, mPaint);
-
-		//4. draw choice texts
-		float cX = width / 2f;
-
-		float centerTextsHeight = cHeight - rectF.height();
-		float textArea = centerTextsHeight / 5f;
-		float paddingV = textArea / 4;
-		float cTextSize = textArea - 2 * paddingV;
-		mPaint.setTextSize(cTextSize);
 		mPaint.setTextAlign(Paint.Align.CENTER);
-
-		String text;
-		sY = cTop + rectF.height() + paddingV + textPadding * 2;
+		float textPaddingV = textAreaH / 5;
+		float textSize = textAreaH - textPaddingV * 2;
+		mPaint.setTextSize(textSize);
+		float sX = width / 2f;
+		float acent = Math.abs(mPaint.getFontMetrics().ascent);
+		float descent = Math.abs(mPaint.getFontMetrics().descent);
+		float sY = cTop + textAreaH / 2f + (acent - descent) / 2;
 		for (int i = 0; i < 5; i++) {
+			String text;
 			int index = mSelectIndex - (2 - i);
 			if (index < 0 || index > mSelections.size() - 1) {
 				text = "-";
 			} else {
 				text = mSelections.get(index);
 			}
-			canvas.drawText(text, cX, sY, mPaint);
-			sY += textArea;
+			canvas.drawText(text, sX, sY, mPaint);
+			sY += textAreaH;
 		}
 
 	}
