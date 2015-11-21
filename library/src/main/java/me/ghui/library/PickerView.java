@@ -8,6 +8,8 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.List;
+
 /**
  * Created by ghui on 11/21/15.
  */
@@ -16,12 +18,14 @@ public class PickerView extends View {
 	private float mHWScale = 0.5f;
 	private String mOkText = "Ok";
 	private String mCancleText = "Cancel";
-	private int mTopDividerColor = Color.parseColor("#FF9B9B9B");
+	private int mTopDividerColor = Color.parseColor("#FACFCFCF");
 	private int mBtnColor = Color.parseColor("#FF4A4A4A");
 
 	private Context mContext;
 	private Paint mPaint;
 	private RectF mRectF;
+	private List<String> mSelections;
+	private int mSelectIndex;
 
 	public PickerView(Context context) {
 		super(context);
@@ -62,6 +66,28 @@ public class PickerView extends View {
 		setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
 	}
 
+	public void setSelections(List<String> selections) {
+		if (selections != null && selections.size() > 0) {
+			mSelectIndex = selections.size() / 2;
+		} else {
+			mSelectIndex = 0;
+		}
+		setSelections(selections, mSelectIndex);
+	}
+
+	public void setSelections(List<String> selections, int selectIndex) {
+		mSelections = selections;
+		select(mSelectIndex);
+	}
+
+	public void select(int index) {
+		if (index < 0 || mSelections == null || index > mSelections.size() - 1) {
+			throw new RuntimeException("invalid select index !");
+		}
+		mSelectIndex = index;
+		postInvalidate();
+	}
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
@@ -89,13 +115,38 @@ public class PickerView extends View {
 		float textPadding = textSize / 2f;
 		float sX = cLeft;
 		float sY = cTop;
-		DrawUtils.drawCenterText(mCancleText, sX, sY, textPadding, textPadding, canvas, mPaint);
+		RectF rectF = DrawUtils.drawCenterText(mCancleText, sX, sY, textPadding, textPadding, canvas, mPaint);
 
 		//3. draw ok btn
 		float eX = cRight;
 		sY = cTop;
 		DrawUtils.drawCenterTextRevrsed(mOkText, eX, sY, textPadding, textPadding, canvas, mPaint);
+
+		//4. draw choice texts
+		float cX = width / 2f;
+
+		float centerTextsHeight = cHeight - rectF.height();
+		float textArea = centerTextsHeight / 5f;
+		float paddingV = textArea / 4;
+		float cTextSize = textArea - 2 * paddingV;
+		mPaint.setTextSize(cTextSize);
+		mPaint.setTextAlign(Paint.Align.CENTER);
+
+		String text;
+		sY = cTop + rectF.height() + paddingV + textPadding * 2;
+		for (int i = 0; i < 5; i++) {
+			int index = mSelectIndex - (2 - i);
+			if (index < 0 || index > mSelections.size() - 1) {
+				text = "-";
+			} else {
+				text = mSelections.get(index);
+			}
+			canvas.drawText(text, cX, sY, mPaint);
+			sY += textArea;
+		}
+
 	}
+
 
 	private float dp(float dp) {
 		return (int) (mContext.getResources().getDisplayMetrics().density * dp + 0.5);
