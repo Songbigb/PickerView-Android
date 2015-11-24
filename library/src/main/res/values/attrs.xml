@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name="PickerView">
+		<attr name="pvDividerColor" format="color|reference"/>
+		<attr name="pvTextColor" format="color|reference"/>
+		<attr name="pvTextSize" format="dimension|reference"/>
+		<attr name="pvOverScrollSize" format="integer"/>
+		<attr name="pvDisplaySize" format="integer"/>
+	</declare-styleable>
+</resources>

@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 		mPickerView = (PickerView) findViewById(R.id.picker_view);
 
 		List<String> strings = new ArrayList<>();
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < 6; i++) {
 			strings.add(i + "");
 		}
 		mPickerView.setSelections(strings,2);
