@@ -93,7 +93,7 @@ public class PickerView extends View {
 		}
 		mSelectIndex = index;
 		mIndexBeforeScroll = mSelectIndex;
-		postInvalidate();
+		scrollTo(0, 144 * (mSelectIndex - 2));
 	}
 
 	public void setMaxOverScrolSize(int size) {
@@ -117,6 +117,7 @@ public class PickerView extends View {
 		//1.draw center line
 		float lSx = cLeft + cWidth / 6f;
 		mTextAreaH = cHeight / 5f;
+		log("h:" + mTextAreaH);
 		float lSy = cTop + 2 * mTextAreaH + getScrollY();
 		float lEx = lSx + cWidth * 4 / 6f;
 		float lEy = lSy;
@@ -137,16 +138,16 @@ public class PickerView extends View {
 		float sX = width / 2f;
 		float acent = Math.abs(mPaint.getFontMetrics().ascent);
 		float descent = Math.abs(mPaint.getFontMetrics().descent);
+		float dY = cTop + mTextAreaH / 2f + (acent - descent) / 2;
 
 		int start = mSelectIndex - 2;
 		int end = mSelectIndex + 2;
-		float sY = cTop + mTextAreaH / 2f + (acent - descent) / 2 + getScrollY();
-
 		if (mSelectIndex == 0) {
 			start -= mMaxOverScrollSize;
 		} else if (mSelectIndex == mSelections.size() - 1) {
 			end += mMaxOverScrollSize;
 		}
+		float sY = start * mTextAreaH;
 
 		for (int i = start; i <= end; i++) {
 			String text;
@@ -155,7 +156,7 @@ public class PickerView extends View {
 			} else {
 				text = "-";
 			}
-			canvas.drawText(text, sX, sY, mPaint);
+			canvas.drawText(text, sX, sY + dY, mPaint);
 			sY += mTextAreaH;
 		}
 
@@ -165,10 +166,6 @@ public class PickerView extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		mGestureDetector.onTouchEvent(event);
-
-		if (event.getAction() == MotionEvent.ACTION_UP) {
-			autoSettle();
-		}
 		return true;
 	}
 
@@ -176,23 +173,10 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			int scrollY = getScrollY();
-			if (scrollY < -(mIndexBeforeScroll + mMaxOverScrollSize) * mTextAreaH) {
-				distanceY = 0;
-			} else if (scrollY > ((mSelectionSize - mIndexBeforeScroll + mMaxOverScrollSize) * mTextAreaH)) {
-				distanceY = 0;
-			}
 			scrollBy(0, (int) distanceY);
 			refreshCenter();
 			return true;
 		}
-	}
-
-	private void autoSettle() {
-		int scrollY = getScrollY();
-		float deltaY = mSelectIndex * mTextAreaH - scrollY;
-		mScroller.startScroll(0, scrollY, 0, (int) deltaY);
-		invalidate();
 	}
 
 	private void refreshCenter() {
