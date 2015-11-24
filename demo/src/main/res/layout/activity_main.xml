@@ -9,6 +9,6 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:background="@android:color/white"
-		android:paddingBottom="8dp"
+		android:padding="0dp"
 		/>
 </RelativeLayout>
