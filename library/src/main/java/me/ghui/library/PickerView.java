@@ -25,17 +25,16 @@ public class PickerView extends View {
 	private Paint mPaint;
 	private List<String> mSelections;
 	private int mSelectIndex;
-	int mIndexBeforeScroll;
 	private GestureDetectorCompat mGestureDetector;
 	private float mTextAreaH;
-	private int mMaxOverScrollSize;
 	private int mDisplaySize;
-	private int mSelectionSize;
+	private int mSize;
 	private OverScroller mScroller;
 	private float mTextSize;
 	private float mTextPaddingV;
 	private int mTextColor;
 	private int mDividerColor;
+	private int mMaxOverScrollSize;
 
 	public PickerView(Context context) {
 		super(context);
@@ -54,7 +53,6 @@ public class PickerView extends View {
 
 	private void init(AttributeSet attrs) {
 		mContext = getContext();
-
 		TypedArray ta = attrs == null ? null : getContext().obtainStyledAttributes(attrs, R.styleable.PickerView);
 		if (ta != null) {
 			try {
@@ -63,7 +61,6 @@ public class PickerView extends View {
 				mTextAreaH = mTextSize + 2 * mTextPaddingV;
 				mTextColor = ta.getColor(R.styleable.PickerView_pvTextColor, Color.BLACK);
 				mDividerColor = ta.getColor(R.styleable.PickerView_pvDividerColor, Color.GRAY);
-				mMaxOverScrollSize = ta.getInt(R.styleable.PickerView_pvOverScrollSize, 2);
 				mDisplaySize = ta.getInt(R.styleable.PickerView_pvDisplaySize, 5);
 			} finally {
 				ta.recycle();
@@ -72,6 +69,7 @@ public class PickerView extends View {
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mGestureDetector = new GestureDetectorCompat(mContext, new PickerViewGestureListener());
 		mScroller = new OverScroller(mContext);
+		mMaxOverScrollSize = Math.max(mDisplaySize / 2, 2);
 	}
 
 	@Override
@@ -92,7 +90,7 @@ public class PickerView extends View {
 
 	public void setSelections(List<String> selections, int selectIndex) {
 		mSelections = selections;
-		mSelectionSize = mSelections == null ? 0 : mSelections.size();
+		mSize = mSelections == null ? 0 : mSelections.size();
 		select(selectIndex);
 	}
 
@@ -101,24 +99,17 @@ public class PickerView extends View {
 			throw new RuntimeException("invalid select index !");
 		}
 		mSelectIndex = index;
-		mIndexBeforeScroll = mSelectIndex;
+		//scroll the index item to the center
 		scrollTo(0, (int) (mTextAreaH * (mSelectIndex - mDisplaySize / 2)));
-	}
-
-	public void setMaxOverScrolSize(int size) {
-		mMaxOverScrollSize = size;
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		int height = getMeasuredHeight();
 		int width = getMeasuredWidth();
 		int cLeft = getPaddingLeft();
 		int cTop = getPaddingTop();
 		int cRight = width - getPaddingRight();
-		int cBottom = height - getPaddingBottom();
-		int cHeight = cBottom - cTop;
 		int cWidth = cRight - cLeft;
 
 		float dividerH = dp(1);
@@ -129,7 +120,7 @@ public class PickerView extends View {
 		float lEy = lSy;
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(dividerH);
-		mPaint.setColor(mTextColor);
+		mPaint.setColor(mDividerColor);
 		canvas.drawLine(lSx, lSy, lEx, lEy, mPaint);
 		lSy = lEy = lSy + mTextAreaH;
 		canvas.drawLine(lSx, lSy, lEx, lEy, mPaint);
@@ -146,14 +137,7 @@ public class PickerView extends View {
 
 		int start = mSelectIndex - mDisplaySize / 2;
 		int end = mSelectIndex + mDisplaySize / 2;
-
-		if (mSelectIndex == 0) {
-			start -= mMaxOverScrollSize;
-		} else if (mSelectIndex == mSelections.size() - 1) {
-			end += mMaxOverScrollSize;
-		}
 		float sY = start * mTextAreaH;
-
 		for (int i = start; i <= end; i++) {
 			String text;
 			if (i >= 0 && i < mSelections.size()) {
@@ -164,22 +148,25 @@ public class PickerView extends View {
 			canvas.drawText(text, sX, sY + dY, mPaint);
 			sY += mTextAreaH;
 		}
-
 	}
 
 
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		boolean result = mGestureDetector.onTouchEvent(event);
-		if (event.getAction() == MotionEvent.ACTION_UP) {
-			int scrollY = getScrollY();
-			if (scrollY < -(mMaxOverScrollSize + mDisplaySize / 2) * mTextAreaH) {
-				//scroll back to index =0
+	public void computeScroll() {
+		if (mScroller.computeScrollOffset()) {
+			log("currY:" + mScroller.getCurrY());
+			scrollTo(0, mScroller.getCurrY());
+		}
+	}
 
-			} else if (scrollY > (mSelectionSize - mDisplaySize / 2) * mTextAreaH) {
-				//scroll back to index = size-1
-			} else {
-				autoSettle();
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		boolean consume = mGestureDetector.onTouchEvent(event);
+		if (MotionEvent.ACTION_UP == event.getAction()) {
+			int scrollY = getScrollY();
+			int halfSize = mDisplaySize / 2;
+			if (scrollY < -halfSize * mTextAreaH) {
+				mScroller.startScroll(0, scrollY, 0, (int) (-halfSize * mTextAreaH - scrollY));
 			}
 		}
 		return true;
@@ -189,41 +176,36 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			float deltaY;
 			int scrollY = getScrollY();
-			float deltaY = distanceY;
-			if (scrollY < -(mMaxOverScrollSize + mDisplaySize / 2) * mTextAreaH) {
-//				log("disY 1");
+			if (scrollY < -(mDisplaySize / 2 + mMaxOverScrollSize) * mTextAreaH) {
+				log("deltaY1");
 				deltaY = 0;
 			} else if (scrollY < -(mDisplaySize / 2) * mTextAreaH) {
-//				log("disY 2");
-				deltaY /= 4;
-			} else if (scrollY > (mSelectionSize - mDisplaySize / 2 - 1 + mMaxOverScrollSize) * mTextAreaH) {
-//				log("disY 4");
+				deltaY = distanceY / 4;
+			} else if (scrollY > (mSize - mDisplaySize / 2 + mMaxOverScrollSize) * mTextAreaH) {
+				log("deltaY3");
 				deltaY = 0;
-			} else if (scrollY > (mSelectionSize - mDisplaySize / 2) * mTextAreaH) {
-//				log("disY 3");
-				deltaY /= 4;
+			} else if (scrollY > (mSize - mDisplaySize / 2 - 1) * mTextAreaH) {
+				deltaY = distanceY / 4;
 			} else {
 				deltaY = distanceY;
 			}
 			scrollBy(0, (int) deltaY);
-			refreshCenter();
+			refresh();
 			return true;
 		}
 	}
 
-	private void refreshCenter() {
+	private void refresh() {
 		int scrollY = getScrollY();
-		int deltaIndex = Math.round(scrollY / mTextAreaH);
-		mSelectIndex = mIndexBeforeScroll + deltaIndex;
-		log("scrollY:" + scrollY + ",delta:" + deltaIndex + ",mSelectIndex:" + mSelectIndex);
+		mSelectIndex = (int) (scrollY / mTextAreaH + mDisplaySize / 2);
 		invalidate();
 	}
 
 	private void autoSettle() {
 
 	}
-
 
 	private float dp(float dp) {
 		return (int) (mContext.getResources().getDisplayMetrics().density * dp + 0.5);
