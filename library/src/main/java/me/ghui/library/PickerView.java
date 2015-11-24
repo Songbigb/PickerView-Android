@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -35,6 +36,8 @@ public class PickerView extends View {
 	private int mTextColor;
 	private int mDividerColor;
 	private int mMaxOverScrollSize;
+	private boolean mFling;
+
 
 	public PickerView(Context context) {
 		super(context);
@@ -154,8 +157,14 @@ public class PickerView extends View {
 	@Override
 	public void computeScroll() {
 		if (mScroller.computeScrollOffset()) {
-			log("currY:" + mScroller.getCurrY());
+//			log("currY:" + mScroller.getCurrY());
 			scrollTo(0, mScroller.getCurrY());
+			refresh();
+		} else {
+			if (mFling) {
+				mFling = false;
+				autoSettle();
+			}
 		}
 	}
 
@@ -167,26 +176,29 @@ public class PickerView extends View {
 			int halfSize = mDisplaySize / 2;
 			if (scrollY < -halfSize * mTextAreaH) {
 				mScroller.startScroll(0, scrollY, 0, (int) (-halfSize * mTextAreaH - scrollY));
+				refresh();
+			} else if (scrollY > (mSize - 1 - halfSize) * mTextAreaH) {
+				mScroller.startScroll(0, scrollY, 0, (int) ((mSize - 1 - halfSize) * mTextAreaH - scrollY));
+				refresh();
+			} else {
+				autoSettle();
 			}
 		}
 		return true;
 	}
 
 	class PickerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
-
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 			float deltaY;
 			int scrollY = getScrollY();
 			if (scrollY < -(mDisplaySize / 2 + mMaxOverScrollSize) * mTextAreaH) {
-				log("deltaY1");
 				deltaY = 0;
 			} else if (scrollY < -(mDisplaySize / 2) * mTextAreaH) {
 				deltaY = distanceY / 4;
 			} else if (scrollY > (mSize - mDisplaySize / 2 + mMaxOverScrollSize) * mTextAreaH) {
-				log("deltaY3");
 				deltaY = 0;
-			} else if (scrollY > (mSize - mDisplaySize / 2 - 1) * mTextAreaH) {
+			} else if (scrollY > (mSize - 1 - mDisplaySize / 2) * mTextAreaH) {
 				deltaY = distanceY / 4;
 			} else {
 				deltaY = distanceY;
@@ -195,16 +207,51 @@ public class PickerView extends View {
 			refresh();
 			return true;
 		}
+
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+			int minY = (int) (-(mDisplaySize / 2) * mTextAreaH);
+			int maxY = (int) ((mSize - mDisplaySize / 2) * mTextAreaH);
+			int overY = (int) (mMaxOverScrollSize * mTextAreaH);
+			mScroller.fling(0, getScrollY(), 0, (int) -velocityY, 0, 0, minY, maxY, 0, overY);
+			mFling = true;
+			ViewCompat.postInvalidateOnAnimation(PickerView.this);
+			return true;
+		}
+
+		@Override
+		public boolean onSingleTapUp(MotionEvent e) {
+			int offset = (int) (getScrollY() + e.getY() - mDisplaySize / 2 * mTextAreaH);
+			refresh(offset);
+			return true;
+		}
+
+		@Override
+		public boolean onDown(MotionEvent e) {
+			if (!mScroller.isFinished()) {
+				mScroller.forceFinished(false);
+			}
+			mFling = false;
+			if (null != getParent()) {
+				getParent().requestDisallowInterceptTouchEvent(true);
+			}
+			return true;
+		}
+
 	}
 
-	private void refresh() {
-		int scrollY = getScrollY();
-		mSelectIndex = (int) (scrollY / mTextAreaH + mDisplaySize / 2);
+	private void refresh(int offset) {
+		mSelectIndex = (int) (offset / mTextAreaH + mDisplaySize / 2);
 		invalidate();
 	}
 
-	private void autoSettle() {
+	private void refresh() {
+		refresh(getScrollY());
+	}
 
+	private void autoSettle() {
+		mScroller.startScroll(0, getScrollY(), 0, (int) ((mSelectIndex - mDisplaySize / 2) * mTextAreaH - getScrollY()));
+		refresh();
 	}
 
 	private float dp(float dp) {
