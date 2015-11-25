@@ -21,7 +21,6 @@ import java.util.List;
  */
 public class PickerView extends View {
 	private final String TAG = "PickerView";
-	//scale of height and width
 	private Context mContext;
 	private Paint mPaint;
 	private List<String> mSelections;
@@ -36,8 +35,7 @@ public class PickerView extends View {
 	private int mTextColor;
 	private int mDividerColor;
 	private int mMaxOverScrollSize;
-	private boolean mFling;
-
+	private boolean mFling = false;
 
 	public PickerView(Context context) {
 		super(context);
@@ -157,7 +155,6 @@ public class PickerView extends View {
 	@Override
 	public void computeScroll() {
 		if (mScroller.computeScrollOffset()) {
-//			log("currY:" + mScroller.getCurrY());
 			scrollTo(0, mScroller.getCurrY());
 			refresh();
 		} else {
@@ -171,7 +168,7 @@ public class PickerView extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		boolean consume = mGestureDetector.onTouchEvent(event);
-		if (MotionEvent.ACTION_UP == event.getAction()) {
+		if (!mFling && MotionEvent.ACTION_UP == event.getAction()) {
 			int scrollY = getScrollY();
 			int halfSize = mDisplaySize / 2;
 			if (scrollY < -halfSize * mTextAreaH) {
@@ -211,10 +208,10 @@ public class PickerView extends View {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			int minY = (int) (-(mDisplaySize / 2) * mTextAreaH);
-			int maxY = (int) ((mSize - mDisplaySize / 2) * mTextAreaH);
+			int maxY = (int) ((mSize - 1 - mDisplaySize / 2) * mTextAreaH);
 			int overY = (int) (mMaxOverScrollSize * mTextAreaH);
-			mScroller.fling(0, getScrollY(), 0, (int) -velocityY, 0, 0, minY, maxY, 0, overY);
 			mFling = true;
+			mScroller.fling(0, getScrollY(), 0, (int) -(velocityY), 0, 0, minY, maxY, 0, overY);
 			ViewCompat.postInvalidateOnAnimation(PickerView.this);
 			return true;
 		}
@@ -237,7 +234,6 @@ public class PickerView extends View {
 			}
 			return true;
 		}
-
 	}
 
 	private void refresh(int offset) {
