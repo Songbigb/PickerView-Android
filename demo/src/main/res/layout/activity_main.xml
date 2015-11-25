@@ -10,6 +10,8 @@
 		android:layout_alignParentBottom="true"
 		android:background="@android:color/white"
 		android:padding="0dp"
+		app:pvTextPaddingH="20dp"
+		app:pvTextPaddingV="30dp"
 		app:pvDisplaySize="5"
 		app:pvTextSize="40dp"/>
 </RelativeLayout>
