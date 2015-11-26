@@ -21,6 +21,6 @@ public class MainActivity extends AppCompatActivity {
 		for (int i = 0; i < 157; i++) {
 			strings.add(i + "");
 		}
-		mPickerView.setSelections(strings, 3);
+		mPickerView.setSelections(strings, 4);
 	}
 }

@@ -24,7 +24,7 @@ public class PickerView extends View {
 	private Context mContext;
 	private Paint mPaint;
 	private List<String> mSelections;
-	private int mSelectIndex;
+	private int mSelectIndex = 0;
 	private GestureDetectorCompat mGestureDetector;
 	private float mTextAreaHeight;
 	private float mTextAreaWidth;
@@ -77,6 +77,7 @@ public class PickerView extends View {
 		mGestureDetector = new GestureDetectorCompat(mContext, new PickerViewGestureListener());
 		mScroller = new OverScroller(mContext);
 		mMaxOverScrollSize = Math.max(mHalfSize, 2);
+		select(0);
 	}
 
 	@Override
@@ -117,7 +118,7 @@ public class PickerView extends View {
 	}
 
 	public void select(int index) {
-		if (index < 0 || mSelections == null || index > mSelections.size() - 1) {
+		if (index < 0 || index > mSize - 1 && mSize != 0) {
 			throw new RuntimeException("invalid select index !");
 		}
 		mSelectIndex = index;
@@ -162,7 +163,7 @@ public class PickerView extends View {
 		float sY = start * mTextAreaHeight;
 		for (int i = start; i <= end; i++) {
 			String text;
-			if (i >= 0 && i < mSelections.size()) {
+			if (i >= 0 && mSelections != null && i < mSelections.size()) {
 				text = mSelections.get(i);
 			} else {
 				text = "-";
