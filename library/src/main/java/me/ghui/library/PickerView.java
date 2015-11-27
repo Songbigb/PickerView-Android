@@ -39,6 +39,7 @@ public class PickerView extends View {
 	private int mMaxOverScrollSize;
 	private boolean mFling = false;
 	private int mHalfSize = 2;
+	private PickerListhner mPickChangeListener;
 
 	public PickerView(Context context) {
 		super(context);
@@ -268,9 +269,13 @@ public class PickerView extends View {
 		}
 	}
 
+
 	private void refresh(int offset) {
 		mSelectIndex = (int) (offset / mCellHeight + mHalfSize);
 		invalidate();
+		if (mPickChangeListener != null) {
+			mPickChangeListener.onChanging(mSelectIndex);
+		}
 	}
 
 	private void refresh() {
@@ -286,8 +291,24 @@ public class PickerView extends View {
 		return (int) (mContext.getResources().getDisplayMetrics().density * dp + 0.5);
 	}
 
-	private void log(String msg) {
-		Log.d(TAG, msg);
+	@Override
+	protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+		super.onScrollChanged(l, t, oldl, oldt);
+		Log.e("picker--", "onScrollChanged");
+		if (Math.abs(t - oldt) == 0) {
+			Log.w("picker--", "onStopped!!!");
+		}
+	}
+	// TODO(ghui): 11/28/15  
+
+	public void setPickChangeListener(PickerListhner listener) {
+		mPickChangeListener = listener;
+	}
+
+	public interface PickerListhner {
+		void onChanging(int index);
+
+		void onPicked(int index);
 	}
 
 }

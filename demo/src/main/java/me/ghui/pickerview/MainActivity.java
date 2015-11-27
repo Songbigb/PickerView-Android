@@ -2,6 +2,7 @@ package me.ghui.pickerview;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,5 +23,16 @@ public class MainActivity extends AppCompatActivity {
 			strings.add(i + "");
 		}
 		mPickerView.setSelections(strings, 104);
+		mPickerView.setPickChangeListener(new PickerView.PickerListhner() {
+			@Override
+			public void onChanging(int index) {
+				Log.e("ghui", "onChanging: " + index);
+			}
+
+			@Override
+			public void onPicked(int index) {
+				Log.e("ghui", "onPicked: " + index);
+			}
+		});
 	}
 }
