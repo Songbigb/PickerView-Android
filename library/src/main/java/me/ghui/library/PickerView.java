@@ -26,14 +26,14 @@ public class PickerView extends View {
 	private List<String> mSelections;
 	private int mSelectIndex = 0;
 	private GestureDetectorCompat mGestureDetector;
-	private float mTextAreaHeight;
-	private float mTextAreaWidth;
+	private float mCellHeight;
+	private float mCellWidth;
 	private int mDisplaySize;
 	private int mSize;
 	private OverScroller mScroller;
 	private float mTextSize;
-	private float mTextPaddingV;
-	private float mTextPaddingH;
+	private float mCellPaddingV;
+	private float mCellPaddingH;
 	private int mTextColor;
 	private int mDividerColor;
 	private int mMaxOverScrollSize;
@@ -61,10 +61,10 @@ public class PickerView extends View {
 		if (ta != null) {
 			try {
 				mTextSize = ta.getDimension(R.styleable.PickerView_pvTextSize, dp(25));
-				mTextPaddingV = ta.getDimension(R.styleable.PickerView_pvTextPaddingV, mTextSize / 5);
-				mTextPaddingH = ta.getDimension(R.styleable.PickerView_pvTextPaddingH, mTextSize / 5);
-				mTextAreaHeight = mTextSize + 2 * mTextPaddingV;
-				mTextAreaWidth = mTextSize + 2 * mTextPaddingH;
+				mCellPaddingV = ta.getDimension(R.styleable.PickerView_pvTextPaddingV, mTextSize / 5);
+				mCellPaddingH = ta.getDimension(R.styleable.PickerView_pvTextPaddingH, mTextSize / 5);
+				mCellHeight = mTextSize + 2 * mCellPaddingV;
+				mCellWidth = mTextSize + 2 * mCellPaddingH;
 				mTextColor = ta.getColor(R.styleable.PickerView_pvTextColor, Color.BLACK);
 				mDividerColor = ta.getColor(R.styleable.PickerView_pvDividerColor, Color.GRAY);
 				mDisplaySize = ta.getInt(R.styleable.PickerView_pvDisplaySize, 5);
@@ -74,31 +74,32 @@ public class PickerView extends View {
 			}
 		}
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mPaint.setTextSize(mTextSize);
 		mGestureDetector = new GestureDetectorCompat(mContext, new PickerViewGestureListener());
 		mScroller = new OverScroller(mContext);
 		mMaxOverScrollSize = Math.max(mHalfSize, 2);
+		measureCellWidth();
 		select(0);
 	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		setMeasuredDimension(measureWidth(widthMeasureSpec), measureHeight(heightMeasureSpec));
+		setMeasuredDimension(measureWidth(widthMeasureSpec), measureHeight());
 	}
 
 	private int measureWidth(int widthSpec) {
 		int mode = MeasureSpec.getMode(widthSpec);
 		int size = MeasureSpec.getSize(widthSpec);
 		if (mode == MeasureSpec.AT_MOST) {
-			size = (int) Math.min(size, mTextAreaWidth + getPaddingLeft() + getPaddingRight());
+			size = (int) mCellWidth;
 		} else {
-			// TODO(ghui): 11/25/15
-			size = (int) mTextAreaWidth;
+			size = (int) Math.max(size, mCellWidth);
 		}
 		return MeasureSpec.makeMeasureSpec(size, mode);
 	}
 
-	private int measureHeight(int heightSpec) {
-		int size = (int) (mTextAreaHeight * mDisplaySize);
+	private int measureHeight() {
+		int size = (int) (mCellHeight * mDisplaySize);
 		return MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
 	}
 
@@ -114,7 +115,19 @@ public class PickerView extends View {
 	public void setSelections(List<String> selections, int selectIndex) {
 		mSelections = selections;
 		mSize = mSelections == null ? 0 : mSelections.size();
+		measureCellWidth();
 		select(selectIndex);
+	}
+
+	private void measureCellWidth() {
+		if (mSelections == null || mSelections.isEmpty()) {
+			return;
+		}
+		float newSize;
+		for (String cell : mSelections) {
+			newSize = mPaint.measureText(cell) + 2 * mCellPaddingH;
+			mCellWidth = Math.max(mCellWidth, newSize);
+		}
 	}
 
 	public void select(int index) {
@@ -122,8 +135,9 @@ public class PickerView extends View {
 			throw new RuntimeException("invalid select index !");
 		}
 		mSelectIndex = index;
-		//scroll the index item to the center
-		scrollTo(0, (int) (mTextAreaHeight * (mSelectIndex - mHalfSize)));
+		//scroll the index item to center
+		scrollTo(0, (int) (mCellHeight * (mSelectIndex - mHalfSize)));
+		postInvalidate();
 	}
 
 	@Override
@@ -138,29 +152,28 @@ public class PickerView extends View {
 		float dividerH = dp(1);
 		//1.draw center line
 		float lSx = cLeft + cWidth / 6f;
-		float lSy = cTop + (mHalfSize) * mTextAreaHeight + getScrollY();
+		float lSy = cTop + (mHalfSize) * mCellHeight + getScrollY();
 		float lEx = lSx + cWidth * 4 / 6f;
 		float lEy = lSy;
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(dividerH);
 		mPaint.setColor(mDividerColor);
 		canvas.drawLine(lSx, lSy, lEx, lEy, mPaint);
-		lSy = lEy = lSy + mTextAreaHeight;
+		lSy = lEy = lSy + mCellHeight;
 		canvas.drawLine(lSx, lSy, lEx, lEy, mPaint);
 
 		//2.draw center text
 		mPaint.setColor(mTextColor);
 		mPaint.setStyle(Paint.Style.FILL);
 		mPaint.setTextAlign(Paint.Align.CENTER);
-		mPaint.setTextSize(mTextSize);
 		float sX = width / 2f;
 		float acent = Math.abs(mPaint.getFontMetrics().ascent);
 		float descent = Math.abs(mPaint.getFontMetrics().descent);
-		float dY = cTop + mTextAreaHeight / 2f + (acent - descent) / 2;
+		float dY = cTop + mCellHeight / 2f + (acent - descent) / 2;
 
 		int start = mSelectIndex - mHalfSize;
 		int end = mSelectIndex + mHalfSize;
-		float sY = start * mTextAreaHeight;
+		float sY = start * mCellHeight;
 		for (int i = start; i <= end; i++) {
 			String text;
 			if (i >= 0 && mSelections != null && i < mSelections.size()) {
@@ -169,7 +182,7 @@ public class PickerView extends View {
 				text = "-";
 			}
 			canvas.drawText(text, sX, sY + dY, mPaint);
-			sY += mTextAreaHeight;
+			sY += mCellHeight;
 		}
 	}
 
@@ -192,11 +205,11 @@ public class PickerView extends View {
 		boolean consume = mGestureDetector.onTouchEvent(event);
 		if (!mFling && MotionEvent.ACTION_UP == event.getAction()) {
 			int scrollY = getScrollY();
-			if (scrollY < -mHalfSize * mTextAreaHeight) {
-				mScroller.startScroll(0, scrollY, 0, (int) (-mHalfSize * mTextAreaHeight - scrollY));
+			if (scrollY < -mHalfSize * mCellHeight) {
+				mScroller.startScroll(0, scrollY, 0, (int) (-mHalfSize * mCellHeight - scrollY));
 				refresh();
-			} else if (scrollY > (mSize - 1 - mHalfSize) * mTextAreaHeight) {
-				mScroller.startScroll(0, scrollY, 0, (int) ((mSize - 1 - mHalfSize) * mTextAreaHeight - scrollY));
+			} else if (scrollY > (mSize - 1 - mHalfSize) * mCellHeight) {
+				mScroller.startScroll(0, scrollY, 0, (int) ((mSize - 1 - mHalfSize) * mCellHeight - scrollY));
 				refresh();
 			} else {
 				autoSettle();
@@ -211,13 +224,13 @@ public class PickerView extends View {
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 			float deltaY;
 			int scrollY = getScrollY();
-			if (scrollY < -(mHalfSize + mMaxOverScrollSize) * mTextAreaHeight) {
+			if (scrollY < -(mHalfSize + mMaxOverScrollSize) * mCellHeight) {
 				deltaY = 0;
-			} else if (scrollY < -(mHalfSize) * mTextAreaHeight) {
+			} else if (scrollY < -(mHalfSize) * mCellHeight) {
 				deltaY = distanceY / 4;
-			} else if (scrollY > (mSize - mHalfSize + mMaxOverScrollSize) * mTextAreaHeight) {
+			} else if (scrollY > (mSize - mHalfSize + mMaxOverScrollSize) * mCellHeight) {
 				deltaY = 0;
-			} else if (scrollY > (mSize - 1 - mHalfSize) * mTextAreaHeight) {
+			} else if (scrollY > (mSize - 1 - mHalfSize) * mCellHeight) {
 				deltaY = distanceY / 4;
 			} else {
 				deltaY = distanceY;
@@ -229,9 +242,9 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			int minY = (int) (-(mHalfSize) * mTextAreaHeight);
-			int maxY = (int) ((mSize - 1 - mHalfSize) * mTextAreaHeight);
-			int overY = (int) (mMaxOverScrollSize * mTextAreaHeight);
+			int minY = (int) (-(mHalfSize) * mCellHeight);
+			int maxY = (int) ((mSize - 1 - mHalfSize) * mCellHeight);
+			int overY = (int) (mMaxOverScrollSize * mCellHeight);
 			mFling = true;
 			mScroller.fling(0, getScrollY(), 0, (int) -(velocityY), 0, 0, minY, maxY, 0, overY);
 			ViewCompat.postInvalidateOnAnimation(PickerView.this);
@@ -240,7 +253,7 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
-			int offset = (int) (getScrollY() + e.getY() - mHalfSize * mTextAreaHeight);
+			int offset = (int) (getScrollY() + e.getY() - mHalfSize * mCellHeight);
 			refresh(offset);
 			return true;
 		}
@@ -256,7 +269,7 @@ public class PickerView extends View {
 	}
 
 	private void refresh(int offset) {
-		mSelectIndex = (int) (offset / mTextAreaHeight + mHalfSize);
+		mSelectIndex = (int) (offset / mCellHeight + mHalfSize);
 		invalidate();
 	}
 
@@ -265,7 +278,7 @@ public class PickerView extends View {
 	}
 
 	private void autoSettle() {
-		mScroller.startScroll(0, getScrollY(), 0, (int) ((mSelectIndex - mHalfSize) * mTextAreaHeight - getScrollY()));
+		mScroller.startScroll(0, getScrollY(), 0, (int) ((mSelectIndex - mHalfSize) * mCellHeight - getScrollY()));
 		refresh();
 	}
 
