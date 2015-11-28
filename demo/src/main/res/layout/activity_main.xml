@@ -9,6 +9,6 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:background="@android:color/white"
-		app:pvDisplaySize="3"
+		app:pvDisplaySize="5"
 		app:pvTextSize="40dp"/>
 </RelativeLayout>

@@ -13,6 +13,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.OverScroller;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class PickerView extends View {
 	private Paint mPaint;
 	private List<String> mSelections;
 	private int mSelectIndex = 0;
+	private int mLastSelectIndex = 0;
 	private GestureDetectorCompat mGestureDetector;
 	private float mCellHeight;
 	private float mCellWidth;
@@ -188,6 +190,11 @@ public class PickerView extends View {
 	}
 
 
+	private void autoSettle() {
+		mScroller.startScroll(0, getScrollY(), 0, (int) ((mSelectIndex - mHalfSize) * mCellHeight - getScrollY()));
+		refresh();
+	}
+
 	@Override
 	public void computeScroll() {
 		if (mScroller.computeScrollOffset()) {
@@ -261,20 +268,7 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onDown(MotionEvent e) {
-			if (!mScroller.isFinished()) {
-				mScroller.forceFinished(false);
-			}
-			mFling = false;
 			return true;
-		}
-	}
-
-
-	private void refresh(int offset) {
-		mSelectIndex = (int) (offset / mCellHeight + mHalfSize);
-		invalidate();
-		if (mPickChangeListener != null) {
-			mPickChangeListener.onChanging(mSelectIndex);
 		}
 	}
 
@@ -282,33 +276,39 @@ public class PickerView extends View {
 		refresh(getScrollY());
 	}
 
-	private void autoSettle() {
-		mScroller.startScroll(0, getScrollY(), 0, (int) ((mSelectIndex - mHalfSize) * mCellHeight - getScrollY()));
-		refresh();
-	}
-
-	private float dp(float dp) {
-		return (int) (mContext.getResources().getDisplayMetrics().density * dp + 0.5);
-	}
-
-	@Override
-	protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-		super.onScrollChanged(l, t, oldl, oldt);
-		Log.e("picker--", "onScrollChanged");
-		if (Math.abs(t - oldt) == 0) {
-			Log.w("picker--", "onStopped!!!");
+	private void refresh(int offset) {
+		mLastSelectIndex = mSelectIndex;
+		mSelectIndex = (int) (offset / mCellHeight + mHalfSize);
+		invalidate();
+		if (mPickChangeListener != null) {
+			mPickChangeListener.onPicking(mSelectIndex);
+			if (mLastSelectIndex != mSelectIndex) {
+				mPickChangeListener.onPicked(mSelectIndex);
+			}
 		}
 	}
-	// TODO(ghui): 11/28/15  
+
+	private int dp(float dp) {
+		return (int) (mContext.getResources().getDisplayMetrics().density * dp + 0.5);
+	}
 
 	public void setPickChangeListener(PickerListhner listener) {
 		mPickChangeListener = listener;
 	}
 
 	public interface PickerListhner {
-		void onChanging(int index);
+		void onPicking(int index);
 
+		// TODO(ghui): 11/28/15
 		void onPicked(int index);
+	}
+
+	private void log(String msg) {
+		Log.e(TAG, msg);
+	}
+
+	private void toast(String msg) {
+		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
 
 }

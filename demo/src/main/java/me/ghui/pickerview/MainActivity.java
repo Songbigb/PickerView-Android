@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
 		mPickerView.setSelections(strings, 104);
 		mPickerView.setPickChangeListener(new PickerView.PickerListhner() {
 			@Override
-			public void onChanging(int index) {
-				Log.e("ghui", "onChanging: " + index);
+			public void onPicking(int index) {
+				Log.e("ghui", "onPicking: " + index);
 			}
 
 			@Override
