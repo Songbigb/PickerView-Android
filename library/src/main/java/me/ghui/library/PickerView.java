@@ -13,7 +13,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.OverScroller;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class PickerView extends View {
 	private int mMaxOverScrollSize;
 	private boolean mFling = false;
 	private int mHalfSize = 2;
-	private PickerListhner mPickChangeListener;
+	private PickerListener mPickChangeListener;
 
 	public PickerView(Context context) {
 		super(context);
@@ -251,7 +250,7 @@ public class PickerView extends View {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			int minY = (int) (-(mHalfSize) * mCellHeight);
-			int maxY = (int) ((mSize - 1 - mHalfSize) * mCellHeight);
+			int maxY = (int) ((mSize  - mHalfSize) * mCellHeight);
 			int overY = (int) (mMaxOverScrollSize * mCellHeight);
 			mFling = true;
 			mScroller.fling(0, getScrollY(), 0, (int) -(velocityY), 0, 0, minY, maxY, 0, overY);
@@ -262,7 +261,8 @@ public class PickerView extends View {
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
 			int offset = (int) (getScrollY() + e.getY() - mHalfSize * mCellHeight);
-			refresh(offset);
+//			refresh(offset);
+			getSelectOffset(offset);
 			return true;
 		}
 
@@ -274,6 +274,10 @@ public class PickerView extends View {
 
 	private void refresh() {
 		refresh(getScrollY());
+	}
+
+	private void getSelectOffset(int offset) {
+		mSelectIndex = (int) (offset / mCellHeight + mHalfSize);
 	}
 
 	private void refresh(int offset) {
@@ -292,11 +296,11 @@ public class PickerView extends View {
 		return (int) (mContext.getResources().getDisplayMetrics().density * dp + 0.5);
 	}
 
-	public void setPickChangeListener(PickerListhner listener) {
+	public void setPickChangeListener(PickerListener listener) {
 		mPickChangeListener = listener;
 	}
 
-	public interface PickerListhner {
+	public interface PickerListener {
 		void onPicking(int index);
 
 		// TODO(ghui): 11/28/15
@@ -307,8 +311,5 @@ public class PickerView extends View {
 		Log.e(TAG, msg);
 	}
 
-	private void toast(String msg) {
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-	}
 
 }
