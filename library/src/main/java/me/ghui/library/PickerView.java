@@ -250,7 +250,7 @@ public class PickerView extends View {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			int minY = (int) (-(mHalfSize) * mCellHeight);
-			int maxY = (int) ((mSize  - mHalfSize) * mCellHeight);
+			int maxY = (int) ((mSize - mHalfSize) * mCellHeight);
 			int overY = (int) (mMaxOverScrollSize * mCellHeight);
 			mFling = true;
 			mScroller.fling(0, getScrollY(), 0, (int) -(velocityY), 0, 0, minY, maxY, 0, overY);
@@ -261,8 +261,7 @@ public class PickerView extends View {
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
 			int offset = (int) (getScrollY() + e.getY() - mHalfSize * mCellHeight);
-//			refresh(offset);
-			getSelectOffset(offset);
+			refresh(offset);
 			return true;
 		}
 
@@ -283,6 +282,13 @@ public class PickerView extends View {
 	private void refresh(int offset) {
 		mLastSelectIndex = mSelectIndex;
 		mSelectIndex = (int) (offset / mCellHeight + mHalfSize);
+		if (mSelectIndex < 0) {
+			mSelectIndex = 0;
+		} else if (mSelectIndex > mSize - 1) {
+			mSelectIndex = mSize - 1;
+		} else {
+			//do nothing
+		}
 		invalidate();
 		if (mPickChangeListener != null) {
 			mPickChangeListener.onPicking(mSelectIndex);
