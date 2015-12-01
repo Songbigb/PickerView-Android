@@ -40,6 +40,8 @@ public class PickerView extends View {
 	private int mDividerColor;
 	private int mMaxOverScrollSize;
 	private boolean mFling = false;
+	private boolean mTapUp = false;
+	private boolean mScroll = false;
 	private PickerListener mPickChangeListener;
 
 	public PickerView(Context context) {
@@ -137,7 +139,7 @@ public class PickerView extends View {
 		mSelectIndex = index;
 		//scroll the index item to center
 		scrollTo(0, (int) (mCellHeight * (mSelectIndex - mHalfDisplaySize)));
-		postInvalidate();
+		invalidate();
 	}
 
 	@Override
@@ -177,7 +179,7 @@ public class PickerView extends View {
 		float sY = start * mCellHeight;
 		for (int i = start; i <= end; i++) {
 			String text;
-			if (i >= 0 && mSelections != null && i < mSelections.size()) {
+			if (i >= 0 && i < mSize) {
 				text = mSelections.get(i);
 			} else {
 				text = "-";
@@ -188,46 +190,25 @@ public class PickerView extends View {
 	}
 
 
-	private void autoSettle() {
-		mScroller.startScroll(0, getScrollY(), 0, (int) ((mSelectIndex - mHalfDisplaySize) * mCellHeight - getScrollY()));
-		refresh();
-	}
-
-	@Override
-	public void computeScroll() {
-		if (mScroller.computeScrollOffset()) {
-			scrollTo(0, mScroller.getCurrY());
-			refresh();
-		} else {
-			if (mFling) {
-				mFling = false;
-				autoSettle();
-			}
-		}
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		boolean consume = mGestureDetector.onTouchEvent(event);
-		if (!mFling && MotionEvent.ACTION_UP == event.getAction()) {
-			int scrollY = getScrollY();
-			if (scrollY < -mHalfDisplaySize * mCellHeight) {
-				mScroller.startScroll(0, scrollY, 0, (int) (-mHalfDisplaySize * mCellHeight - scrollY));
-				refresh();
-			} else if (scrollY > (mSize - 1 - mHalfDisplaySize) * mCellHeight) {
-				mScroller.startScroll(0, scrollY, 0, (int) ((mSize - 1 - mHalfDisplaySize) * mCellHeight - scrollY));
-				refresh();
-			} else {
-				autoSettle();
-			}
-			consume = true;
-		}
-		return consume || super.onTouchEvent(event);
-	}
-
 	class PickerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+		@Override
+		public boolean onDown(MotionEvent e) {
+			return true;
+		}
+
+		@Override
+		public boolean onSingleTapUp(MotionEvent e) {
+			mTapUp = true;
+			int deltaY = (int) ((-mHalfDisplaySize + Math.floor(e.getY() / mCellHeight)) * mCellHeight);
+			scrollY(deltaY);
+			return true;
+		}
+
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			Log.e("test", "onScroll");
+			mScroll = true;
 			float deltaY;
 			int scrollY = getScrollY();
 			if (scrollY < -(mHalfDisplaySize + mMaxOverScrollSize) * mCellHeight) {
@@ -242,12 +223,13 @@ public class PickerView extends View {
 				deltaY = distanceY;
 			}
 			scrollBy(0, (int) deltaY);
-			refresh();
+			refreshSelectedIndex();
 			return true;
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+			Log.e("test", "onFling");
 			int minY = (int) (-(mHalfDisplaySize) * mCellHeight);
 			int maxY = (int) ((mSize - mHalfDisplaySize - 1) * mCellHeight);
 			int overY = (int) (mMaxOverScrollSize * mCellHeight);
@@ -257,32 +239,63 @@ public class PickerView extends View {
 			return true;
 		}
 
-		@Override
-		public boolean onSingleTapUp(MotionEvent e) {
-			int offset = (int) (getScrollY() + e.getY() - mHalfDisplaySize * mCellHeight);
-			refresh(offset);
-			return true;
-		}
+	}
 
-		@Override
-		public boolean onDown(MotionEvent e) {
-			return true;
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		boolean consume = mGestureDetector.onTouchEvent(event);
+		if (!mFling && !mTapUp && mScroll && MotionEvent.ACTION_UP == event.getAction()) {
+			mScroll = false;
+			int scrollY = getScrollY();
+			int deltaY;
+			if (scrollY < -mHalfDisplaySize * mCellHeight) {
+				deltaY = (int) (-mHalfDisplaySize * mCellHeight - scrollY);
+			} else if (scrollY > (mSize - 1 - mHalfDisplaySize) * mCellHeight) {
+				deltaY = (int) ((mSize - 1 - mHalfDisplaySize) * mCellHeight - scrollY);
+			} else {
+				deltaY = (int) ((mSelectIndex - mHalfDisplaySize) * mCellHeight - getScrollY());
+			}
+			scrollY(deltaY);
+			consume = true;
+		}
+		return consume || super.onTouchEvent(event);
+	}
+
+	@Override
+	public void computeScroll() {
+		if (mScroller.computeScrollOffset()) {
+			scrollTo(0, mScroller.getCurrY());
+			refreshSelectedIndex();
+		} else {
+			if (mFling) {
+				mFling = false;
+				autoScrollY();
+			}
+			if (mTapUp) {
+				mTapUp = false;
+				autoScrollY();
+			}
+
 		}
 	}
 
-	private void refresh() {
-		refresh(getScrollY());
+	private void scrollY(int deltaY) {
+		mScroller.startScroll(0, getScrollY(), 0, deltaY);
+		invalidate();
 	}
 
-	private void refresh(int offset) {
+	private void autoScrollY() {
+		int deltaY = (int) ((mSelectIndex - mHalfDisplaySize) * mCellHeight - getScrollY());
+		scrollY(deltaY);
+	}
+
+	private void refreshSelectedIndex(int offset) {
 		mLastSelectIndex = mSelectIndex;
 		mSelectIndex = (int) (offset / mCellHeight + mHalfDisplaySize);
 		if (mSelectIndex < 0) {
 			mSelectIndex = 0;
 		} else if (mSelectIndex > mSize - 1) {
 			mSelectIndex = mSize - 1;
-		} else {
-			//do nothing
 		}
 		invalidate();
 		if (mPickChangeListener != null) {
@@ -291,6 +304,10 @@ public class PickerView extends View {
 				mPickChangeListener.onPicked(mSelectIndex);
 			}
 		}
+	}
+
+	private void refreshSelectedIndex() {
+		refreshSelectedIndex(getScrollY());
 	}
 
 	private int dp(float dp) {
