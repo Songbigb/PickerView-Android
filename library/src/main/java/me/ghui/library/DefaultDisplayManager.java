@@ -9,20 +9,15 @@ import android.widget.PopupWindow;
 /**
  * Created by ghui on 11/29/15.
  */
-public class DisplayManager {
-	private static DisplayManager mInstance;
+public class DefaultDisplayManager {
 	private PopupWindow mPopupWindow;
 
-
-	private DisplayManager() {
-		init();
+	public static DefaultDisplayManager newInstance() {
+		return new DefaultDisplayManager();
 	}
 
-	public static DisplayManager getInstance() {
-		if (mInstance == null) {
-			mInstance = new DisplayManager();
-		}
-		return mInstance;
+	private DefaultDisplayManager() {
+		init();
 	}
 
 	private void init() {

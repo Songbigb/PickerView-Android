@@ -1,6 +1,7 @@
 package me.ghui.library;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.OverScroller;
 
@@ -38,6 +40,7 @@ public class PickerView extends View {
 	private float mCellPaddingH;
 	private int mTextColor;
 	private int mDividerColor;
+	private float mDividerScale;
 	private int mMaxOverScrollSize;
 	private boolean mFling = false;
 	private boolean mTapUp = false;
@@ -58,7 +61,10 @@ public class PickerView extends View {
 	}
 
 	private void init(AttributeSet attrs) {
+		// TODO(ghui): 12/2/15 not yet support padding 
+		setPadding(0, 0, 0, 0);
 		mContext = getContext();
+		Resources resources = mContext.getResources();
 		TypedArray ta = mContext.obtainStyledAttributes(attrs, R.styleable.PickerView, 0, 0);
 		if (ta != null) {
 			try {
@@ -68,7 +74,9 @@ public class PickerView extends View {
 				mCellHeight = mTextSize + 2 * mCellPaddingV;
 				mCellWidth = mTextSize + 2 * mCellPaddingH;
 				mTextColor = ta.getColor(R.styleable.PickerView_pvTextColor, Color.BLACK);
-				mDividerColor = ta.getColor(R.styleable.PickerView_pvDividerColor, Color.GRAY);
+				mDividerColor = ta.getColor(R.styleable.PickerView_pvDividerColor, resources.getColor(R.color.indicator_color));
+				mDividerScale = ta.getFraction(R.styleable.PickerView_pvDividerScale, 1, 1, 0.8f);
+				mDividerScale = Math.min(mDividerScale, 1);
 				mDisplaySize = ta.getInt(R.styleable.PickerView_pvDisplaySize, 5);
 				mHalfDisplaySize = mDisplaySize / 2;
 			} finally {
@@ -153,9 +161,9 @@ public class PickerView extends View {
 
 		float dividerH = dp(1);
 		//1.draw center line
-		float lSx = cLeft + cWidth / 6f;
+		float lSx = cLeft + cWidth * (1 - mDividerScale) / 2f;
 		float lSy = cTop + (mHalfDisplaySize) * mCellHeight + getScrollY();
-		float lEx = lSx + cWidth * 4 / 6f;
+		float lEx = lSx + mDividerScale * cWidth;
 		float lEy = lSy;
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(dividerH);
@@ -199,6 +207,7 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
+			playSoundEffect(SoundEffectConstants.CLICK);
 			mTapUp = true;
 			int deltaY = (int) ((-mHalfDisplaySize + Math.floor(e.getY() / mCellHeight)) * mCellHeight);
 			int max = (int) ((mSize - 1 - mHalfDisplaySize) * mCellHeight) - getScrollY();
@@ -211,7 +220,6 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			Log.e("test", "onScroll");
 			mScroll = true;
 			float deltaY;
 			int scrollY = getScrollY();
@@ -331,6 +339,5 @@ public class PickerView extends View {
 	private void log(String msg) {
 		Log.e(TAG, msg);
 	}
-
 
 }

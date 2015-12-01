@@ -10,10 +10,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.ghui.library.DisplayManager;
+import me.ghui.library.DefaultDisplayManager;
 import me.ghui.library.PickerView;
 
-public class MainActivity extends AppCompatActivity implements PickerView.PickerListener {
+public class MainActivity extends AppCompatActivity implements PickerView.PickerListener, View.OnClickListener {
+	private DefaultDisplayManager mDisplayManager;
 	private PickerView pickerView;
 	private TextView detailPickedTv;
 
@@ -32,20 +33,22 @@ public class MainActivity extends AppCompatActivity implements PickerView.Picker
 		}
 
 		View view = LayoutInflater.from(this).inflate(R.layout.pop_layout, null);
+		mDisplayManager = DefaultDisplayManager.newInstance();
+		mDisplayManager.setLayout(view);
+		View okBtn = view.findViewById(R.id.ok_btn);
 		pickerView = (PickerView) view.findViewById(R.id.picker);
-		pickerView.setSelections(items);
-		DisplayManager.getInstance().setLayout(view);
 		pickerView.setPickChangeListener(this);
+		pickerView.setSelections(items);
+		okBtn.setOnClickListener(this);
 	}
 
 	public void display(View view) {
-		DisplayManager.getInstance().show(view);
+		mDisplayManager.show(view);
 	}
 
 	public void dismiss(View view) {
-		DisplayManager.getInstance().dismiss();
+		mDisplayManager.dismiss();
 	}
-
 	@Override
 	public void onPicking(int index) {
 		Log.w("pickerView", "onPicking :" + index);
@@ -55,5 +58,12 @@ public class MainActivity extends AppCompatActivity implements PickerView.Picker
 	public void onPicked(int index) {
 		Log.e("pickerView", "onPicked:" + index);
 		detailPickedTv.setText("picked:" + index);
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.ok_btn) {
+			mDisplayManager.dismiss();
+		}
 	}
 }

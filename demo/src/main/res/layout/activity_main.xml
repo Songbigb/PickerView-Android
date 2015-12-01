@@ -2,20 +2,29 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent" android:orientation="vertical">
+	android:layout_height="match_parent"
+	android:background="#D8D8D8" android:orientation="vertical">
 	<TextView
 		android:id="@+id/detail"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:padding="10dp"/>
+		android:gravity="center"
+		android:padding="20dp"
+		android:text="--"
+		android:textSize="20sp"/>
 	<Button
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:background="@android:color/holo_green_light"
 		android:onClick="display"
-		android:text="show"/>
+		android:padding="10dp"
+		android:text="display"/>
 	<Button
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+		android:background="@android:color/holo_red_light"
 		android:onClick="dismiss"
+		android:padding="10dp"
 		android:text="dismiss"/>
 </LinearLayout>
