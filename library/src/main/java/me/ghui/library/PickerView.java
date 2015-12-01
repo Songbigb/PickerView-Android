@@ -171,8 +171,9 @@ public class PickerView extends View {
 		float descent = Math.abs(mPaint.getFontMetrics().descent);
 		float dY = cTop + mCellHeight / 2f + (acent - descent) / 2;
 
-		int start = mSelectIndex - mHalfSize;
-		int end = mSelectIndex + mHalfSize;
+		int start = mSelectIndex - mHalfSize - mMaxOverScrollSize;
+		int end = mSelectIndex + mHalfSize + mMaxOverScrollSize;
+
 		float sY = start * mCellHeight;
 		for (int i = start; i <= end; i++) {
 			String text;
@@ -221,7 +222,7 @@ public class PickerView extends View {
 			}
 			consume = true;
 		}
-		return consume | super.onTouchEvent(event);
+		return consume || super.onTouchEvent(event);
 	}
 
 	class PickerViewGestureListener extends GestureDetector.SimpleOnGestureListener {

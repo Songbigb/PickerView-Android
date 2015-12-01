@@ -1,6 +1,5 @@
 package me.ghui.library;
 
-import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.View;
@@ -13,18 +12,15 @@ import android.widget.PopupWindow;
 public class DisplayManager {
 	private static DisplayManager mInstance;
 	private PopupWindow mPopupWindow;
-	private View mRootView;
-	private Context mContext;
 
 
-	private DisplayManager(Context context) {
-		mContext = context;
+	private DisplayManager() {
 		init();
 	}
 
-	public static DisplayManager getInstance(Context context) {
+	public static DisplayManager getInstance() {
 		if (mInstance == null) {
-			mInstance = new DisplayManager(context);
+			mInstance = new DisplayManager();
 		}
 		return mInstance;
 	}
@@ -41,8 +37,7 @@ public class DisplayManager {
 	}
 
 	public void setLayout(View view) {
-		mRootView = view;
-		mPopupWindow.setContentView(mRootView);
+		mPopupWindow.setContentView(view);
 	}
 
 	public void show(View view) {

@@ -26,23 +26,23 @@ public class MainActivity extends AppCompatActivity implements PickerView.Picker
 
 	private void test() {
 		List<String> items = new ArrayList<>();
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < 16; i++) {
 			items.add(i + "");
 		}
 
 		View view = LayoutInflater.from(this).inflate(R.layout.pop_layout, null);
 		pickerView = (PickerView) view.findViewById(R.id.picker);
 		pickerView.setSelections(items);
-		DisplayManager.getInstance(this).setLayout(view);
+		DisplayManager.getInstance().setLayout(view);
 		pickerView.setPickChangeListener(this);
 	}
 
 	public void display(View view) {
-		DisplayManager.getInstance(this).show(view);
+		DisplayManager.getInstance().show(view);
 	}
 
 	public void dismiss(View view) {
-		DisplayManager.getInstance(this).dismiss();
+		DisplayManager.getInstance().dismiss();
 	}
 
 	@Override
