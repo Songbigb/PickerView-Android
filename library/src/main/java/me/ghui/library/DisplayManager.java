@@ -6,7 +6,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 /**
  * Created by ghui on 11/29/15.
@@ -46,7 +45,6 @@ public class DisplayManager {
 		mPopupWindow.setContentView(mRootView);
 	}
 
-
 	public void show(View view) {
 		if (mPopupWindow != null && !mPopupWindow.isShowing()) {
 			mPopupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
@@ -55,14 +53,10 @@ public class DisplayManager {
 
 	public void dismiss() {
 		if (mPopupWindow != null) {
-			Toast.makeText(mContext, "dismiss", Toast.LENGTH_SHORT).show();
 			mPopupWindow.dismiss();
 		}
 	}
 
-	public int[] getPickedIndexs() {
-		return null;
-	}
 
 }
 

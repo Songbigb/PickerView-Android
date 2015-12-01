@@ -43,13 +43,11 @@ public class PickerView extends View {
 	private PickerListener mPickChangeListener;
 
 	public PickerView(Context context) {
-		super(context);
-		init(null);
+		this(context, null);
 	}
 
 	public PickerView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init(attrs);
+		this(context, attrs, 0);
 	}
 
 	public PickerView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -59,7 +57,7 @@ public class PickerView extends View {
 
 	private void init(AttributeSet attrs) {
 		mContext = getContext();
-		TypedArray ta = attrs == null ? null : getContext().obtainStyledAttributes(attrs, R.styleable.PickerView);
+		TypedArray ta = mContext.obtainStyledAttributes(attrs, R.styleable.PickerView, 0, 0);
 		if (ta != null) {
 			try {
 				mTextSize = ta.getDimension(R.styleable.PickerView_pvTextSize, dp(25));
@@ -273,10 +271,6 @@ public class PickerView extends View {
 
 	private void refresh() {
 		refresh(getScrollY());
-	}
-
-	private void getSelectOffset(int offset) {
-		mSelectIndex = (int) (offset / mCellHeight + mHalfSize);
 	}
 
 	private void refresh(int offset) {
