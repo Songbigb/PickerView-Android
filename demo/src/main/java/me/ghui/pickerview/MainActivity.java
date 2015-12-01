@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity implements PickerView.Picker
 
 	private void test() {
 		List<String> items = new ArrayList<>();
-		for (int i = 0; i < 16; i++) {
+		for (int i = 0; i < 8; i++) {
+
 			items.add(i + "");
 		}
 
