@@ -48,12 +48,12 @@ public class MainActivity extends AppCompatActivity implements PickerView.Picker
 
 	@Override
 	public void onPicking(int index) {
-		Log.w("ghui", "onPicking :" + index);
+		Log.w("pickerView", "onPicking :" + index);
 	}
 
 	@Override
 	public void onPicked(int index) {
-		Log.e("ghui", "onPicked:" + index);
+		Log.e("pickerView", "onPicked:" + index);
 		detailPickedTv.setText("picked:" + index);
 	}
 }

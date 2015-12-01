@@ -201,6 +201,10 @@ public class PickerView extends View {
 		public boolean onSingleTapUp(MotionEvent e) {
 			mTapUp = true;
 			int deltaY = (int) ((-mHalfDisplaySize + Math.floor(e.getY() / mCellHeight)) * mCellHeight);
+			int max = (int) ((mSize - 1 - mHalfDisplaySize) * mCellHeight) - getScrollY();
+			int min = (int) (-(mHalfDisplaySize) * mCellHeight) - getScrollY();
+			deltaY = Math.max(deltaY, min);
+			deltaY = Math.min(deltaY, max);
 			scrollY(deltaY);
 			return true;
 		}
@@ -321,7 +325,6 @@ public class PickerView extends View {
 	public interface PickerListener {
 		void onPicking(int index);
 
-		// TODO(ghui): 11/28/15
 		void onPicked(int index);
 	}
 
