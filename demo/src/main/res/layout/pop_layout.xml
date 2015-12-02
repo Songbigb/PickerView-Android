@@ -25,6 +25,6 @@
 		app:pvTextColor="@android:color/black"
 		app:pvTextPaddingH="10dp"
 		app:pvTextPaddingV="5dp"
-		app:pvTextSize="35dp"/>
+		app:pvTextSize="25dp"/>
 </LinearLayout>
 

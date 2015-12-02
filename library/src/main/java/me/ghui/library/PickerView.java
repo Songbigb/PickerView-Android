@@ -241,9 +241,8 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			Log.e("test", "onFling");
 			int minY = (int) (-(mHalfDisplaySize) * mCellHeight);
-			int maxY = (int) ((mSize - mHalfDisplaySize - 1) * mCellHeight);
+			int maxY = (int) ((mSize - mHalfDisplaySize) * mCellHeight);
 			int overY = (int) (mMaxOverScrollSize * mCellHeight);
 			mFling = true;
 			mScroller.fling(0, getScrollY(), 0, (int) -(velocityY), 0, 0, minY, maxY, 0, overY);
