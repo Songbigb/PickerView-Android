@@ -202,6 +202,9 @@ public class PickerView extends View {
 
 		@Override
 		public boolean onDown(MotionEvent e) {
+			if (!mScroller.isFinished()) {
+				mScroller.forceFinished(false);
+			}
 			return true;
 		}
 
@@ -209,9 +212,11 @@ public class PickerView extends View {
 		public boolean onSingleTapUp(MotionEvent e) {
 			playSoundEffect(SoundEffectConstants.CLICK);
 			mTapUp = true;
-			int deltaY = (int) ((-mHalfDisplaySize + Math.floor(e.getY() / mCellHeight)) * mCellHeight);
+			int deltaSize = (int) (Math.floor(e.getY() / mCellHeight) - mHalfDisplaySize);
+			int deltaY = (int) (deltaSize * mCellHeight);
+			Log.e("testt", "deltaSize:" + deltaSize);
 			int max = (int) ((mSize - 1 - mHalfDisplaySize) * mCellHeight) - getScrollY();
-			int min = (int) (-(mHalfDisplaySize) * mCellHeight) - getScrollY();
+			int min = (int) (-mHalfDisplaySize * mCellHeight - getScrollY());
 			deltaY = Math.max(deltaY, min);
 			deltaY = Math.min(deltaY, max);
 			scrollY(deltaY);
@@ -302,7 +307,7 @@ public class PickerView extends View {
 
 	private void refreshSelectedIndex(int offset) {
 		mLastSelectIndex = mSelectIndex;
-		mSelectIndex = (int) (offset / mCellHeight + mHalfDisplaySize);
+		mSelectIndex = Math.round(offset / mCellHeight + mHalfDisplaySize);
 		if (mSelectIndex < 0) {
 			mSelectIndex = 0;
 		} else if (mSelectIndex > mSize - 1) {
