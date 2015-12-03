@@ -18,7 +18,7 @@ Another custom PickerView for android,which is easy to use and customize.
 								app:pvTextPaddingV="10dp"
 								app:pvTextSize="35sp"/>
 
-###Event Callback
+### Event Callback
 	
 	mPickerView2.setOnPickChangeListener(new PickerView.OnPickerListener() {
 			@Override
@@ -49,7 +49,6 @@ Another custom PickerView for android,which is easy to use and customize.
 
 ### Thanks
 [WheelView-Android](https://github.com/lantouzi/WheelView-Android)
-
 
 ### End
 `PickerView-Android` has been not finished yet,It's just a start version.Lots of ideas waitting to be achieved.  
