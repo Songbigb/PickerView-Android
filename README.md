@@ -18,13 +18,26 @@ Another custom PickerView for android,which is easy to use and customize.
 								app:pvTextPaddingV="10dp"
 								app:pvTextSize="35sp"/>
 
+###Event Callback
+	
+	mPickerView2.setOnPickChangeListener(new PickerView.OnPickerListener() {
+			@Override
+			public void onPicking(int index) {
+
+			}
+
+			@Override
+			public void onPicked(int index) {
+				
+			}
+		});
 
 ### Attributes
 	
 	<?xml version="1.0" encoding="utf-8"?>
 	<resources>
 		<declare-styleable name="PickerView">
-			<attr name="pvTextColor" format="color|reference"/>   // color of the item text //default is black
+			<attr name="pvTextColor" format="color|reference"/>   // color of the item text ,default is black
 			<attr name="pvTextSize" format="dimension|reference"/>  //textsize of the item text ,default is 25dp
 			<attr name="pvDisplaySize" format="integer|reference"/>  //display size of the view ,default is 5
 			<attr name="pvTextPaddingV" format="dimension|reference"/> // text padding vertically,default is 0
@@ -37,7 +50,8 @@ Another custom PickerView for android,which is easy to use and customize.
 ### Thanks
 [WheelView-Android](https://github.com/lantouzi/WheelView-Android)
 
-### At the End
+
+### End
 `PickerView-Android` has been not finished yet,It's just a start version.Lots of ideas waitting to be achieved.  
 Also glad to receive feedback from u.
 
