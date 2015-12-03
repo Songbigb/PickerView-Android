@@ -1,30 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent" android:layout_height="match_parent"
 	android:background="#D8D8D8" android:orientation="vertical">
+
+	<me.ghui.library.PickerView android:id="@+id/picker2"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:layout_below="@+id/picker2_picked_tv"
+								android:layout_toRightOf="@+id/picker1"
+								android:background="@android:color/white"
+								app:pvDisplaySize="8"
+								app:pvDividerColor="@android:color/holo_orange_light"
+								app:pvDividerScale="50%"
+								app:pvTextColor="@android:color/holo_red_light"/>
 	<TextView
-		android:id="@+id/detail"
+		android:id="@+id/picker2_picked_tv"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_alignLeft="@id/picker2"
+		android:layout_alignParentRight="true"
+		android:background="@android:color/holo_red_light"
 		android:gravity="center"
 		android:padding="20dp"
-		android:text="--"
-		android:textSize="20sp"/>
+		android:text="picked:"/>
+	<me.ghui.library.PickerView android:id="@+id/picker0"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_alignBottom="@id/picker2"
+								android:background="@android:color/darker_gray"/>
+	<me.ghui.library.PickerView android:id="@+id/picker1"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_alignBottom="@id/picker2"
+								android:layout_toRightOf="@id/picker0"
+								android:background="@android:color/holo_orange_light"
+								app:pvDisplaySize="3"
+								app:pvDividerColor="@android:color/holo_green_dark"
+								app:pvTextColor="@android:color/holo_blue_bright"
+								app:pvTextPaddingH="20dp"
+								app:pvTextPaddingV="10dp"
+								app:pvTextSize="35sp"/>
+
 	<Button
+		android:id="@+id/btn"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
 		android:background="@android:color/holo_green_light"
-		android:onClick="display"
+		android:onClick="popOnClick"
 		android:padding="10dp"
-		android:text="display"/>
-	<Button
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="20dp"
-		android:background="@android:color/holo_red_light"
-		android:onClick="dismiss"
-		android:padding="10dp"
-		android:text="dismiss"/>
-</LinearLayout>
+		android:text="pop"/>
+</RelativeLayout>

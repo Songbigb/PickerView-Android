@@ -45,7 +45,7 @@ public class PickerView extends View {
 	private boolean mFling = false;
 	private boolean mTapUp = false;
 	private boolean mScroll = false;
-	private PickerListener mPickChangeListener;
+	private OnPickerListener mPickChangeListener;
 
 	public PickerView(Context context) {
 		this(context, null);
@@ -214,7 +214,6 @@ public class PickerView extends View {
 			mTapUp = true;
 			int deltaSize = (int) (Math.floor(e.getY() / mCellHeight) - mHalfDisplaySize);
 			int deltaY = (int) (deltaSize * mCellHeight);
-			Log.e("testt", "deltaSize:" + deltaSize);
 			int max = (int) ((mSize - 1 - mHalfDisplaySize) * mCellHeight) - getScrollY();
 			int min = (int) (-mHalfDisplaySize * mCellHeight - getScrollY());
 			deltaY = Math.max(deltaY, min);
@@ -330,11 +329,11 @@ public class PickerView extends View {
 		return (int) (mContext.getResources().getDisplayMetrics().density * dp + 0.5);
 	}
 
-	public void setPickChangeListener(PickerListener listener) {
+	public void setOnPickChangeListener(OnPickerListener listener) {
 		mPickChangeListener = listener;
 	}
 
-	public interface PickerListener {
+	public interface OnPickerListener {
 		void onPicking(int index);
 
 		void onPicked(int index);
