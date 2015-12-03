@@ -50,7 +50,6 @@ Another custom PickerView for android,which is easy to use and customize.
 ### Thanks
 [WheelView-Android](https://github.com/lantouzi/WheelView-Android)
 
-
 ### End
 `PickerView-Android` has been not finished yet,It's just a start version.Lots of ideas waitting to be achieved.  
 Also glad to receive feedback from u.
