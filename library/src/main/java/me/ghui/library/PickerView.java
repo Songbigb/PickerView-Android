@@ -61,8 +61,6 @@ public class PickerView extends View {
 	}
 
 	private void init(AttributeSet attrs) {
-		// TODO(ghui): 12/2/15 not yet support padding 
-		setPadding(0, 0, 0, 0);
 		mContext = getContext();
 		Resources resources = mContext.getResources();
 		TypedArray ta = mContext.obtainStyledAttributes(attrs, R.styleable.PickerView, 0, 0);
@@ -101,15 +99,15 @@ public class PickerView extends View {
 		int mode = MeasureSpec.getMode(widthSpec);
 		int size = MeasureSpec.getSize(widthSpec);
 		if (mode == MeasureSpec.AT_MOST) {
-			size = (int) mCellWidth;
+			size = (int) mCellWidth + getPaddingLeft() + getPaddingRight();
 		} else {
-			size = (int) Math.max(size, mCellWidth);
+			size = (int) Math.max(size, mCellWidth + getPaddingLeft() + getPaddingRight());
 		}
 		return MeasureSpec.makeMeasureSpec(size, mode);
 	}
 
 	private int measureHeight() {
-		int size = (int) (mCellHeight * mDisplaySize);
+		int size = (int) (mCellHeight * mDisplaySize );
 		return MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
 	}
 
@@ -155,7 +153,7 @@ public class PickerView extends View {
 		super.onDraw(canvas);
 		int width = getMeasuredWidth();
 		int cLeft = getPaddingLeft();
-		int cTop = getPaddingTop();
+		int cTop = 0;
 		int cRight = width - getPaddingRight();
 		int cWidth = cRight - cLeft;
 

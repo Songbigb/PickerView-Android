@@ -38,11 +38,9 @@
 								android:background="@android:color/holo_orange_light"
 								app:pvDisplaySize="3"
 								app:pvDividerColor="@android:color/holo_green_dark"
+								app:pvDividerScale="100%"
 								app:pvTextColor="@android:color/holo_blue_bright"
-								app:pvTextPaddingH="20dp"
-								app:pvTextPaddingV="10dp"
 								app:pvTextSize="35sp"/>
-
 	<Button
 		android:id="@+id/btn"
 		android:layout_width="match_parent"
