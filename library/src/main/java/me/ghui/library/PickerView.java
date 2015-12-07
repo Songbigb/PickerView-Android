@@ -45,6 +45,7 @@ public class PickerView extends View {
 	private boolean mFling = false;
 	private boolean mTapUp = false;
 	private boolean mScroll = false;
+	private String mBlankStr = "";
 	private OnPickerListener mPickChangeListener;
 
 	public PickerView(Context context) {
@@ -77,6 +78,10 @@ public class PickerView extends View {
 				mDividerScale = Math.min(mDividerScale, 1);
 				mDisplaySize = ta.getInt(R.styleable.PickerView_pvDisplaySize, 5);
 				mHalfDisplaySize = mDisplaySize / 2;
+				mBlankStr = ta.getString(R.styleable.PickerView_pvBlankStr);
+				if (null == mBlankStr) {
+					mBlankStr = "";
+				}
 			} finally {
 				ta.recycle();
 			}
@@ -107,8 +112,13 @@ public class PickerView extends View {
 	}
 
 	private int measureHeight() {
-		int size = (int) (mCellHeight * mDisplaySize );
+		int size = (int) (mCellHeight * mDisplaySize);
 		return MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
+	}
+
+	public void setBlankStr(String blankStr) {
+		this.mBlankStr = (blankStr == null ? "" : blankStr);
+		invalidate();
 	}
 
 	public void setSelections(List<String> selections) {
@@ -188,7 +198,7 @@ public class PickerView extends View {
 			if (i >= 0 && i < mSize) {
 				text = mSelections.get(i);
 			} else {
-				text = "-";
+				text = mBlankStr;
 			}
 			canvas.drawText(text, sX, sY + dY, mPaint);
 			sY += mCellHeight;
@@ -245,7 +255,7 @@ public class PickerView extends View {
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			int minY = (int) (-(mHalfDisplaySize) * mCellHeight);
 			int maxY = (int) ((mSize - mHalfDisplaySize) * mCellHeight);
-			int overY = (int) (mMaxOverScrollSize * mCellHeight);
+			int overY = (int) (mMaxOverScrollSize / 1.5 * mCellHeight);
 			mFling = true;
 			mScroller.fling(0, getScrollY(), 0, (int) -(velocityY), 0, 0, minY, maxY, 0, overY);
 			ViewCompat.postInvalidateOnAnimation(PickerView.this);

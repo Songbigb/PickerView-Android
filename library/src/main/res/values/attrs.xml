@@ -8,5 +8,6 @@
 		<attr name="pvTextPaddingH" format="dimension|reference"/>
 		<attr name="pvDividerColor" format="color|reference"/>
 		<attr name="pvDividerScale" format="fraction"/>
+		<attr name="pvBlankStr" format="string|reference"/>
 	</declare-styleable>
 </resources>
