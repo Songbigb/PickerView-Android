@@ -1,4 +1,4 @@
-package me.ghui.library;
+package com.lantouzi.library.pickerview;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.OverScroller;
 
 import java.util.List;
+
+import me.ghui.library.R;
 
 /**
  * Created by ghui on 11/21/15.
@@ -45,7 +47,7 @@ public class PickerView extends View {
 	private boolean mFling = false;
 	private boolean mTapUp = false;
 	private boolean mScroll = false;
-	private String mBlankStr = "";
+	private String mBlankStr = "-";
 	private OnPickerListener mPickChangeListener;
 
 	public PickerView(Context context) {
@@ -80,7 +82,7 @@ public class PickerView extends View {
 				mHalfDisplaySize = mDisplaySize / 2;
 				mBlankStr = ta.getString(R.styleable.PickerView_pvBlankStr);
 				if (null == mBlankStr) {
-					mBlankStr = "";
+					mBlankStr = "-";
 				}
 			} finally {
 				ta.recycle();
@@ -117,7 +119,7 @@ public class PickerView extends View {
 	}
 
 	public void setBlankStr(String blankStr) {
-		this.mBlankStr = (blankStr == null ? "" : blankStr);
+		this.mBlankStr = (blankStr == null ? "-" : blankStr);
 		invalidate();
 	}
 

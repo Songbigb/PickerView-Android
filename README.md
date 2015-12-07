@@ -5,7 +5,7 @@ Another custom PickerView for android,which is easy to use and customize.
 
 ### Usage
 
-	<me.ghui.library.PickerView android:id="@+id/picker1"
+	<com.lantouzi.library.pickerview.PickerView android:id="@+id/picker1"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_alignBottom="@id/picker2"

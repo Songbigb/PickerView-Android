@@ -5,16 +5,16 @@
 	android:layout_width="match_parent" android:layout_height="match_parent"
 	android:background="#D8D8D8" android:orientation="vertical">
 
-	<me.ghui.library.PickerView android:id="@+id/picker2"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_below="@+id/picker2_picked_tv"
-								android:layout_toRightOf="@+id/picker1"
-								android:background="@android:color/white"
-								app:pvDisplaySize="8"
-								app:pvDividerColor="@android:color/holo_orange_light"
-								app:pvDividerScale="50%"
-								app:pvTextColor="@android:color/holo_red_light"/>
+	<com.lantouzi.library.pickerview.PickerView android:id="@+id/picker2"
+												android:layout_width="match_parent"
+												android:layout_height="wrap_content"
+												android:layout_below="@+id/picker2_picked_tv"
+												android:layout_toRightOf="@+id/picker1"
+												android:background="@android:color/white"
+												app:pvDisplaySize="8"
+												app:pvDividerColor="@android:color/holo_orange_light"
+												app:pvDividerScale="50%"
+												app:pvTextColor="@android:color/holo_red_light"/>
 	<TextView
 		android:id="@+id/picker2_picked_tv"
 		android:layout_width="match_parent"
@@ -25,22 +25,22 @@
 		android:gravity="center"
 		android:padding="20dp"
 		android:text="picked:"/>
-	<me.ghui.library.PickerView android:id="@+id/picker0"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_alignBottom="@id/picker2"
-								android:background="@android:color/darker_gray"/>
-	<me.ghui.library.PickerView android:id="@+id/picker1"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_alignBottom="@id/picker2"
-								android:layout_toRightOf="@id/picker0"
-								android:background="@android:color/holo_orange_light"
-								app:pvDisplaySize="3"
-								app:pvDividerColor="@android:color/holo_green_dark"
-								app:pvDividerScale="100%"
-								app:pvTextColor="@android:color/holo_blue_bright"
-								app:pvTextSize="35sp"/>
+	<com.lantouzi.library.pickerview.PickerView android:id="@+id/picker0"
+												android:layout_width="wrap_content"
+												android:layout_height="wrap_content"
+												android:layout_alignBottom="@id/picker2"
+												android:background="@android:color/darker_gray"/>
+	<com.lantouzi.library.pickerview.PickerView android:id="@+id/picker1"
+												android:layout_width="wrap_content"
+												android:layout_height="wrap_content"
+												android:layout_alignBottom="@id/picker2"
+												android:layout_toRightOf="@id/picker0"
+												android:background="@android:color/holo_orange_light"
+												app:pvDisplaySize="3"
+												app:pvDividerColor="@android:color/holo_green_dark"
+												app:pvDividerScale="100%"
+												app:pvTextColor="@android:color/holo_blue_bright"
+												app:pvTextSize="35sp"/>
 	<Button
 		android:id="@+id/btn"
 		android:layout_width="match_parent"

@@ -1,10 +1,12 @@
-package me.ghui.library;
+package com.lantouzi.library.pickerview;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+
+import me.ghui.library.R;
 
 /**
  * Created by ghui on 11/29/15.

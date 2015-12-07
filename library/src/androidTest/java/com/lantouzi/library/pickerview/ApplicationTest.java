@@ -1,4 +1,4 @@
-package me.ghui.library;
+package com.lantouzi.library.pickerview;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

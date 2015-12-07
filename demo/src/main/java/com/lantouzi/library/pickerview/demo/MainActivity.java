@@ -1,4 +1,4 @@
-package me.ghui.pickerview;
+package com.lantouzi.library.pickerview.demo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.lantouzi.library.pickerview.DefaultDisplayManager;
+import com.lantouzi.library.pickerview.PickerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import me.ghui.library.DefaultDisplayManager;
-import me.ghui.library.PickerView;
+import me.ghui.pickerview.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 	private DefaultDisplayManager mDisplayManager;

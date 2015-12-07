@@ -17,7 +17,7 @@
 			  android:text="OK"
 			  android:textSize="16sp"
 	/>
-	<me.ghui.library.PickerView
+	<com.lantouzi.library.pickerview.PickerView
 		android:id="@+id/picker"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

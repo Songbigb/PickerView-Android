@@ -1,4 +1,4 @@
-package me.ghui.pickerview;
+package com.lantouzi.library.pickerview.demo;
 
 import org.junit.Test;
 
